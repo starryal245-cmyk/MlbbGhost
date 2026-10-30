@@ -1,0 +1,26 @@
+name: Validate MLBB Ghost
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Syntax-check Python API
+        run: python -m py_compile app.py
+      - name: Syntax-check browser code
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          text = Path("static/index.html").read_text()
+          matches = re.findall(r"<script>(.*?)</script>", text, flags=re.S)
+          assert len(matches) == 1, "Expected exactly one inline script"
+          Path("/tmp/mlbb-ghost-ui.js").write_text(matches[0])
+          PY
+          node --check /tmp/mlbb-ghost-ui.js
