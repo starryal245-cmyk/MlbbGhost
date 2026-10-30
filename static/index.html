@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080e1b">
+<title>MLBB Ghost | Live Match Analyzer</title>
+<style>
+:root{color-scheme:dark;--bg:#070d19;--panel:#111b2c;--panel2:#17243a;--line:#27344a;--muted:#94a3b8;--white:#eef3ff;--blue:#55adff;--red:#fb7185;--gold:#f7ca83;--green:#69d9bb}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse 800px 420px at 55% -140px,#213c70 0%,transparent 85%),var(--bg);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif}
+a{color:var(--blue);text-decoration:none}.shell{max-width:1390px;margin:auto;padding:25px clamp(12px,3vw,36px) 80px}
+.top{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap;margin-bottom:23px}
+.brand{display:flex;align-items:center;gap:14px}.sigil{width:48px;height:48px;border:1px solid #5479ba;border-radius:15px;background:linear-gradient(145deg,#3255a6,#141d33);display:grid;place-items:center;font-weight:900;font-size:25px;color:#dcecff;box-shadow:0 10px 36px #1f64b544}.brand h1{font-size:25px;letter-spacing:1px;margin:0;direction:ltr}.subtitle{font-size:12px;color:var(--muted);margin-top:4px}.badge{font-size:12px;padding:8px 12px;border:1px solid var(--line);border-radius:99px;background:#132138;color:var(--muted)}.badge.ok{color:var(--green);border-color:#215d50}.badge.bad{color:var(--red);border-color:#662d3a}
+.panel{background:linear-gradient(180deg,#111c2e,#0d1625);border:1px solid var(--line);border-radius:17px;padding:19px;box-shadow:0 12px 32px #0002}
+h2{font-size:16px;margin:0 0 13px;font-weight:750}.muted{color:var(--muted)}.small{font-size:12px}.start{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center}
+input[type=url],input[type=file]{min-width:0;width:100%;border:1px solid #33415e;background:#0a1323;color:var(--white);outline:none;border-radius:11px;padding:13px;font-size:14px}
+input[type=url]:focus{border-color:#6a9ee0}button,.action{cursor:pointer;border:0;border-radius:11px;padding:13px 17px;font-size:13px;font-weight:700;background:#335dba;color:#fff;transition:filter .15s}
+button:hover{filter:brightness(1.12)}button:disabled{opacity:.45;cursor:not-allowed}button.secondary{background:#1f2b41;border:1px solid #344258}button.danger{background:#3b2331;color:#ffc1ca;border:1px solid #70374b}
+.message{margin-top:12px;font-size:13px;color:#cfdae9;min-height:20px;overflow-wrap:anywhere}.note{font-size:12px;color:#9cabbe;line-height:1.8;margin:12px 0 0}
+.statusrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}.chip{padding:7px 10px;border-radius:8px;background:#0c1729;color:#aabbd4;border:1px solid #25334a;font-size:11px}
+.grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:16px;margin-top:16px}.dashboard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.frame{width:100%;background:#050a12;border:1px solid #2a3446;border-radius:10px;object-fit:contain;aspect-ratio:16/9;max-height:450px}
+.frameempty{display:grid;place-items:center;width:100%;aspect-ratio:16/9;border-radius:10px;border:1px dashed #32435d;background:#0a1321;color:#687c99;font-size:14px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.side{border:1px solid #2b3c54;border-radius:12px;padding:13px;margin-top:10px;background:#0b1524}.side.blue{border-right:3px solid var(--blue)}.side.red{border-right:3px solid var(--red)}
+.sidehead{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}.teamname{font-size:16px;font-weight:800}.side.blue .teamname{color:var(--blue)}.side.red .teamname{color:var(--red)}.score{font-weight:850;font-size:24px;font-variant-numeric:tabular-nums}
+.label{color:#9dacc4;font-size:11px;margin:9px 0 5px}.heroes{display:flex;flex-wrap:wrap;gap:6px;min-height:29px}
+.hero{font-size:12px;padding:6px 9px;border-radius:7px;background:#1c304a;border:1px solid #344866;direction:ltr}
+.hero.ban{background:#39212c;border-color:#723746;color:#ffb4be}.placeholder{font-size:12px;color:#627793;padding:6px}
+.rowtwo{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#0b1422;border:1px solid #263248;border-radius:10px;padding:12px}.value{font-size:21px;font-weight:850;direction:ltr;margin-top:5px}
+.detail{white-space:pre-wrap;line-height:1.85;font-size:13px;color:#d7e0ef;overflow-wrap:anywhere}.entry{background:#0b1524;border:1px solid #28374f;border-radius:10px;padding:11px;margin-top:9px}.entrytime{font-size:11px;color:#94a8c6;margin-bottom:8px}.event{padding:8px 0;font-size:12px;line-height:1.7;border-top:1px solid #24334b}.event:first-child{border-top:none}
+.position{display:inline-flex;gap:7px;align-items:center;font-size:12px;border:1px solid #384a60;padding:7px 10px;border-radius:8px;margin:4px 4px 0 0;background:#0d1b2c}.position.blue{border-right:2px solid var(--blue)}.position.red{border-right:2px solid var(--red)}
+.error{color:#ffacb8}.good{color:#73ddc0}.gold{color:var(--gold)}.buttons{display:flex;gap:9px;flex-wrap:wrap}.hidden{display:none!important}
+.upload{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.upload input{flex:1;min-width:160px}.warning{border-right:2px solid var(--gold);padding:7px 12px;background:#272133;border-radius:5px;margin-top:8px;font-size:12px;line-height:1.8}
+footer{text-align:center;font-size:11px;color:#667d98;margin-top:28px;line-height:1.8}
+@media(max-width:920px){.grid,.dashboard{grid-template-columns:1fr}}@media(max-width:600px){.shell{padding:16px 10px 55px}.start{grid-template-columns:1fr 1fr}.start input{grid-column:1/-1}.start button{width:100%}.panel{padding:15px}.brand h1{font-size:20px}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="top">
+<div class="brand"><div class="sigil">G</div><div><h1>MLBB GHOST</h1><div class="subtitle">LIVE MATCH INTELLIGENCE · بث مباشر وتحليل بالفيديو</div></div></div>
+<div id="badge" class="badge">جاري التحقق من الخدمة…</div>
+</header>
+
+<section class="panel">
+<h2>رابط البث المباشر</h2>
+<div class="start">
+<input id="url" type="url" dir="ltr" placeholder="https://www.tiktok.com/@username/live" autocapitalize="none" spellcheck="false">
+<button id="start">ابدأ التحليل المباشر</button>
+<button id="stop" class="danger">إيقاف</button>
+</div>
+<div class="message" id="message" role="status">جارٍ الاتصال بالخادم…</div>
+<div class="statusrow">
+<div class="chip">الحالة: <b id="status">—</b></div>
+<div class="chip">المرحلة: <b id="phase">—</b></div>
+<div class="chip">فريمات الفيديو: <b id="frames">0</b></div>
+<div class="chip">تحليلات AI: <b id="analyses">0</b></div>
+<div class="chip">الفاصل: <b id="interval">—</b></div>
+<div class="chip">آخر تحديث: <b id="updated">—</b></div>
+</div>
+<p class="note">تُحلّل لقطات متتابعة من فيديو البث وليست بيانات اللعبة الداخلية. لا يمكن معرفة الروتيشن المخفي بالـ Fog of War، ولن تُعرض نتيجة مباراة غير ظاهرة. الوصول إلى تيكتوك غير مضمون، والبيانات المرئية الصغيرة قد تُقرأ بشكل خاطئ.</p>
+</section>
+
+<div class="grid">
+<section class="panel">
+<div class="between"><h2>آخر لقطة حقيقية من البث</h2><span class="small muted" id="frameTime">ماكو فيديو حالياً</span></div>
+<img id="frame" class="frame hidden" alt="آخر فريم من الفيديو">
+<div id="noFrame" class="frameempty">بمجرد وصول فريم من اللايف راح يظهر هنا</div>
+<div class="between" style="margin-top:14px">
+<div class="small muted">استخراج صور من تيكتوك يتطلب أن يكون الستريم متاحاً للسيرفر.</div>
+<a href="/api/export" class="small">تصدير JSON</a>
+</div>
+</section>
+<section class="panel">
+<h2>التعرف على الأبطال والدرفت</h2>
+<div class="side blue">
+<div class="sidehead"><span id="blueName" class="teamname">BLUE SIDE</span><span class="score" id="blueKills">—</span></div>
+<div class="label">PICKS</div><div id="bluePicks" class="heroes"></div>
+<div class="label">BANS</div><div id="blueBans" class="heroes"></div>
+</div>
+<div class="side red">
+<div class="sidehead"><span id="redName" class="teamname">RED SIDE</span><span class="score" id="redKills">—</span></div>
+<div class="label">PICKS</div><div id="redPicks" class="heroes"></div>
+<div class="label">BANS</div><div id="redBans" class="heroes"></div>
+</div>
+<div class="rowtwo" style="margin-top:12px">
+<div class="metric"><div class="label">Game Time</div><div class="value" id="gameTime">—</div></div>
+<div class="metric"><div class="label">Series Score</div><div class="value" id="series">—</div></div>
+</div>
+<div class="warning" id="winner" style="display:none"></div>
+</section>
+</div>
+
+<div class="dashboard">
+<section class="panel">
+<h2>روتيشن وتحركات الطرفين</h2>
+<p class="small muted">التغيّر الملحوظ بين فريمين؛ التحركات غير المؤكدة تُعرض بدرجة ثقة منخفضة.</p>
+<div id="movements" class="detail"><span class="placeholder">بانتظار مشهد داخل اللعبة.</span></div>
+<h2 style="margin-top:19px">أماكن ظاهرة على الميني ماب</h2>
+<div id="positions"><span class="placeholder">لم يتم رصد موقع مؤكد بعد.</span></div>
+<h2 style="margin-top:19px">الأهداف والأحداث</h2>
+<div id="objectives" class="detail"><span class="placeholder">بانتظار رصد التيرتل أو اللورد أو الأبراج.</span></div>
+</section>
+<section class="panel">
+<h2>التحليل الماكرو وقراءة المباراة</h2>
+<div class="label" style="color:var(--blue)">BLUE SIDE · WIN CONDITION</div>
+<div id="blueAnalysis" class="detail muted">—</div>
+<div class="label" style="color:var(--red);margin-top:14px">RED SIDE · WIN CONDITION</div>
+<div id="redAnalysis" class="detail muted">—</div>
+<div class="label gold" style="margin-top:14px">الوضع الحالي والتصرف الأفضل</div>
+<div id="macro" class="detail muted">—</div>
+<div id="warnings"></div>
+<div class="label" style="margin-top:16px">وضوح قراءة الصورة: <b id="confidence">—</b></div>
+</section>
+</div>
+
+<div class="dashboard">
+<section class="panel">
+<h2>حل بديل: ارفع لقطة أو مقطع من اللايف</h2>
+<p class="small muted">إذا تيكتوك منع الوصول المباشر، ارفع صورة أو MP4/MOV (حتى 70MB). يفحص حتى 6 لقطات من المقطع بالترتيب ويحدث نفس جلسة المباراة.</p>
+<form class="upload" id="uploadForm">
+<input id="uploadFile" name="file" type="file" accept="image/png,image/jpeg,image/webp,video/mp4,video/quicktime,video/webm">
+<button id="uploadButton" type="submit">تحليل الملف</button>
+</form>
+<div id="uploadMsg" class="message"></div>
+<div class="buttons"><button id="reset" class="secondary">مباراة جديدة / مسح البيانات</button></div>
+</section>
+<section class="panel">
+<h2>سجل الملاحظات المتتابعة</h2>
+<div id="events" class="small muted">سجل التحليل بيظهر عقب أول فريم ناجح.</div>
+</section>
+</div>
+<footer>MLBB Ghost · Visual-only analysis · لا تعرض تفاصيل غير ظاهرة بالفيديو · قد تستهلك معالجة كل فريم رصيد OpenAI API.</footer>
+</main>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+let latestVersion=-1, busy=false;
+const safe=(s)=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+const val=(x)=>x===null||x===undefined||x===""?"—":String(x);
+const label={idle:"جاهز",connecting:"جاري الاتصال",watching:"يتابع فيديو حقيقي",stopped:"متوقف",error:"خطأ"};
+const phase={draft:"الدرفت",game:"داخل اللعبة",result:"النتيجة",other:"مشهد خارجي",unknown:"غير واضح"};
+function heroes(id,items,isBan){ $(id).innerHTML=(items||[]).length?(items||[]).map(x=>'<span class="hero'+(isBan?' ban':'')+'">'+safe(x)+'</span>').join(''):'<span class="placeholder">لم يظهر بشكل واضح</span>'; }
+function renderMoves(items){ if(!items||!items.length){$('movements').innerHTML='<span class="placeholder">ماكو روتيشن مؤكد في آخر لقطة.</span>';return}
+ $('movements').innerHTML=items.map(x=>'<div class="entry"><div class="small '+(x.team==='blue'?'good':x.team==='red'?'error':'muted')+'">'+safe((x.team||'unknown').toUpperCase())+' · '+safe(x.hero||'بطل غير واضح')+' · الثقة '+safe(x.certainty||'low')+'</div><div class="detail">'+safe(x.event||'تغيّر تمركز')+'</div><div class="small muted">'+safe(x.from||'?')+' ← '+safe(x.to||'?')+'</div></div>').join('');
+}
+function render(s,meta){
+ const current=s.status||'idle'; $('status').textContent=label[current]||current; $('phase').textContent=phase[s.phase]||'غير معروف'; $('frames').textContent=s.frame_count||0;$('analyses').textContent=s.analysis_count||0;
+ $('updated').textContent=s.updated_at?new Date(s.updated_at).toLocaleTimeString('ar-KW'):'—';
+ $('frameTime').textContent=s.frame_at?new Date(s.frame_at).toLocaleTimeString('ar-KW'):'لا يوجد فيديو';
+ $('message').textContent=s.message||'';
+ $('badge').textContent=meta.configured?'Vision API متصل':'مفتاح Vision API غير مضبوط';
+ $('badge').className='badge '+(meta.configured?'ok':'bad'); $('interval').textContent=(meta.interval||12)+' ث';
+ $('start').disabled=!meta.configured||busy; $('stop').disabled=!(current==='watching'||current==='connecting')||busy;
+ for(const color of ['blue','red']){
+ const side=s[color]||{}; $(color+'Name').textContent=side.name||((color==='blue'?'BLUE':'RED')+' SIDE');
+ $(color+'Kills').textContent=val(s.kills&&s.kills[color]); heroes(color+'Picks',side.picks,false);heroes(color+'Bans',side.bans,true);
+ }
+ $('gameTime').textContent=val(s.game_clock);
+ $('series').textContent=val(s.series_score&&s.series_score.blue)+' - '+val(s.series_score&&s.series_score.red);
+ $('winner').style.display=s.winner?'block':'none';
+ $('winner').textContent=s.winner?'نتيجة ظاهرة: فوز '+(s.winner==='blue'?(s.blue.name||'BLUE SIDE'):(s.red.name||'RED SIDE')):'';
+ $('confidence').textContent=typeof s.confidence==='number'?Math.round(s.confidence*100)+'%':'—';
+ $('blueAnalysis').textContent=val(s.analysis&&s.analysis.blue_win_condition);
+ $('redAnalysis').textContent=val(s.analysis&&s.analysis.red_win_condition);
+ $('macro').textContent=val(s.analysis&&s.analysis.current_macro);
+ $('warnings').innerHTML=((s.analysis&&s.analysis.warnings)||[]).map(x=>'<div class="warning">'+safe(x)+'</div>').join('');
+ renderMoves(s.movements);
+ const positions=s.positions||[];
+ $('positions').innerHTML=positions.length?positions.map(x=>'<span class="position '+safe(x.team)+'">'+safe(x.hero||'?')+' · '+safe(x.zone||'?')+' · '+safe(x.certainty||'?')+'</span>').join(''):'<span class="placeholder">لم يتم رصد موقع مؤكد.</span>';
+ $('objectives').innerHTML=(s.objectives||[]).length?(s.objectives||[]).map(x=>'<div class="event">'+safe(x)+'</div>').join(''):'<span class="placeholder">ما ظهرت أهداف واضحة.</span>';
+ const events=s.events||[];
+ $('events').innerHTML=events.length?events.slice(0,15).map(x=>'<div class="entry"><div class="entrytime">'+safe(x.clock||'—')+' · '+safe(phase[x.phase]||x.phase)+' · '+safe(new Date(x.time).toLocaleTimeString('ar-KW'))+'</div>'+safe(x.note||'')+(x.movements||[]).map(m=>'<div class="event">'+safe(m.hero||'')+' · '+safe(m.event||'')+'</div>').join('')+'</div>').join(''):'سجل التحليل بيظهر عقب أول فريم ناجح.';
+ if(s.frame_version&&s.frame_version!==latestVersion){latestVersion=s.frame_version;$('frame').src='/api/frame?v='+latestVersion;$('frame').classList.remove('hidden');$('noFrame').classList.add('hidden')}
+}
+async function api(path,opts){ const response=await fetch(path,opts);const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:'HTTP '+response.status);return data; }
+async function refresh(){ if(busy)return; try{let data=await api('/api/status');render(data.session,data)}catch(e){$('message').textContent='تعذر الاتصال: '+e.message;$('badge').className='badge bad';$('badge').textContent='الخادم غير متاح';} }
+async function action(path,body){busy=true;try{const data=await api(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});render(data.session,data)}catch(e){$('message').textContent=e.message}finally{busy=false;refresh()}}
+$('start').addEventListener('click',()=>{const url=$('url').value.trim();if(!url){$('message').textContent='حط رابط اللايف أولاً';return}action('/api/start',{url})});
+$('stop').addEventListener('click',()=>action('/api/stop'));
+$('reset').addEventListener('click',()=>{if(confirm('تبي تبدأ مباراة جديدة وتمسح تحليل المباراة السابقة؟')){latestVersion=-1;$('frame').classList.add('hidden');$('noFrame').classList.remove('hidden');action('/api/reset')}});
+$('uploadForm').addEventListener('submit',async e=>{e.preventDefault(); const file=$('uploadFile').files[0];if(!file){$('uploadMsg').textContent='اختر ملف أولاً';return}busy=true;$('uploadButton').disabled=true;$('uploadMsg').textContent='جاري رفع الملف وتحليل الفريمات...';try{const form=new FormData();form.append('file',file);const r=await api('/api/upload',{method:'POST',body:form});$('uploadMsg').textContent='تم تحليل '+r.analyzed+' لقطة؛'+(r.errors||[]).join('، ');render(r.session,r)}catch(err){$('uploadMsg').textContent=err.message}finally{busy=false;$('uploadButton').disabled=false;refresh()}});
+$('frame').addEventListener('error',()=>{$('frame').classList.add('hidden');$('noFrame').classList.remove('hidden')});
+refresh();setInterval(refresh,3500);
+})();
+</script>
+</body>
+</html>
